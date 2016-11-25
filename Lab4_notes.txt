@@ -1,0 +1,31 @@
+Following data path components
+
+a) ALU control logic
+b) 32-bit 128 location Data Memory
+c) 5-bit 2-to-1 multiplexer
+
+Design the simple data path figure 4.17
+ - PC, instruction memory, and PC update circuitry is ot necessary
+
+
+Control path must support
+  - add, sub, and, or, lw, sw
+
+  R format instructions example
+  Op code = 0
+  RegDst = 0
+  RegWrite = during the WB stage
+  ALUSrc = 0
+  ALU Op = 10
+  MemRead = 0
+  MemWrite = 0
+  MemToReg = 0
+
+
+
+
+need 3 muxes
+  5bit 2to1 muxes
+
+can set up control
+6 bit opcode controls the control path
