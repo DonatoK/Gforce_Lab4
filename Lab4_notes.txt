@@ -29,3 +29,9 @@ need 3 muxes
 
 can set up control
 6 bit opcode controls the control path
+
+
+
+
+Control Path
+takes an opcode sets based on code
