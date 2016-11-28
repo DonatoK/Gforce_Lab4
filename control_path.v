@@ -8,6 +8,15 @@ module controls(
   output reg MemtoWrite,
   output reg ALUSrc,
   output reg RegWrite);
+/*
+*This module sets the control signals for the control Path
+*
+*The Signals are dependant on the opcode given
+
+
+*/
+
+
 
   always@(Opcode) begin
       case (Opcode)
