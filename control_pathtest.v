@@ -1,3 +1,7 @@
+/*
+This is just a test bench for the control module
+*/
+
 module testing;
 
 
@@ -11,7 +15,7 @@ wire memtowrite;
 wire alusrc;
 wire regwrite;
 
-controls mycontrol(sample_op,regdst,branch,memtoread,memtoreg,aluop,memtowrite,alusrc,regwrite);
+control mycontrol(sample_op,regdst,branch,memtoread,memtoreg,aluop,memtowrite,alusrc,regwrite);
 
 initial begin
 #2 sample_op = 0;
