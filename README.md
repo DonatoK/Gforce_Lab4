@@ -16,5 +16,3 @@ Luis - Control Unit
 Kevin - Muxes and ALU control
 Donato - Instruction memory slicing
 Eberado - Data Memory
-
-DataPath will be worked on by all of us when everything has been set up.
