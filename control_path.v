@@ -1,4 +1,4 @@
-module controls(
+module control(
   input wire [5:0]  Opcode,
   output reg RegDst,
   output reg Branch,
