@@ -224,12 +224,68 @@ module Memory (CS, WE, ClK, ADDR, Mem_Bus);
     	end
 
     endmodule
+
+/* ALU component*/
+module alu(
+      input wire [31:0] op1,
+      input wire [31:0] op2,
+      input wire [3:0] ctrl,
+      output reg [31:0] result
+      );
+
+      //Trigger when ctrl changes values
+      //Can change the blocking statements to nonblocking statements
+      //However changes in the testbench will be required(remove #'s , except for the op1)
+      always@(ctrl) begin
+        case(ctrl)
+          //Instructions as shown in table in pg 259
+          0 : result = op1 & op2;
+          1 : result = op1 | op2;
+          2 : result = op1 + op2;
+          6 : result = op1 - op2;
+          7 : result = op1 < op2;
+          12: result = ~(op1|op2);
+          default: result = 0;  //Read that most ALUs have a 0 when
+                                // no valid operation was chosen
+        endcase
+      end
+    endmodule
+
+/*Register file component*/
+module registerfile(
+      input wire [4:0] readReg1,
+      input wire [4:0] readReg2,
+      input wire [4:0] writeReg,
+      input wire [31:0] writeData,
+      input wire regWrite,
+      output reg [31:0] readData1,
+      output reg [31:0] readData2);
+
+    //used to make a array of 32 32-bit registers
+    reg [31:0] regfile[31:0];
+
+    //Registerfile will always read registers but will only write to them when
+    //regWrite is set.
+    always @ (readReg1,readReg2,regWrite) begin
+      readData1 = regfile[readReg1];
+      readData2 = regfile[readReg2];
+      if(regWrite == 1)
+        regfile[writeReg] = writeData;
+
+
+    end
+    endmodule
+
+
 /*Main mipscpu*/
 module mipscpu(
     input wire reset,
     input wire clock,
     input wire [31:0] instrword,
     input wire newinstr);
+
+
+
 
 
 

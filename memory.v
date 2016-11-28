@@ -33,7 +33,7 @@ endmodule
 
 
 
-
+/*
 module test_memori;
 
 reg cs, we, clk;
@@ -41,6 +41,7 @@ reg [31:0] addr;
 reg [31:0] mem_bus;
 
 Memory testing1 (cs, we, clk, addr, mem_bus);
+
 initial
 
 	begin
@@ -48,4 +49,4 @@ initial
 	end
 
 
-endmodule
+endmodule*/
