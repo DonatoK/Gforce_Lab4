@@ -293,7 +293,7 @@ module mipscpu(
     wire [5:0] aluctrlcpu;
 
 //Connecting instruction to instruction memory
-instructmem myinsmem(instrword,
+instructmem insmemcpu(instrword,
         opcodecpu,
         readReg1cpu,
         readreg2cpu,
@@ -313,7 +313,7 @@ instructmem myinsmem(instrword,
   wire regwritecpu;
 
 //inputs opcode made by instructmem and assign signals based on opcode
-control mycontrol(
+control controlcpu(
   opcodecpu,
   regdstcpu,
   branchcpu,
@@ -327,7 +327,7 @@ control mycontrol(
 
 //Connect RegDest signal from control and the other parts of instruction word to mux
 //that later connects to register file
-muxRegDestination muxRegDest(
+muxRegDestination muxRegDestcpu(
   readReg2cpu,
   mux1rdcpu,
   regdstcpu,
@@ -336,7 +336,7 @@ muxRegDestination muxRegDest(
 
 
 
-
+muxALUSrc muxAlusrccpu
 
 
 
