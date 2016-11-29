@@ -336,8 +336,9 @@ muxRegDestination muxRegDestcpu(
 
 
 
-muxALUSrc muxAlusrccpu
+muxALUSrc muxAlusrccpu();
 
+muxMemtoReg muxmemtoregcpu();
 
 
 
