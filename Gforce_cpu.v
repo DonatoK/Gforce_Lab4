@@ -357,6 +357,7 @@ wire [31:0] outputtoregwrite;
 muxMemtoReg muxmemtoregcpu(
   readdata,
   aluresult,
+  memtoregcpu,
   outputtoregwrite
   );
 
