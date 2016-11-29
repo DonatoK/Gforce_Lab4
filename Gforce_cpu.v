@@ -335,6 +335,10 @@ control controlcpu(
   alusrccpu,
   regwritecpu);
 
+//Register File connections - by Kevin
+registerfile registerfilecpu(readReg1cpu);
+
+
 
 //Connect RegDest signal from control and the other parts of instruction word to mux
 //that later connects to register file
@@ -350,6 +354,7 @@ wire [31:0] toalucpu;
 muxALUSrc muxAlusrccpu(
   readdata2cpu,
   signextedcpu,
+  alusrccpu,
   toalucpu,
   );
 
