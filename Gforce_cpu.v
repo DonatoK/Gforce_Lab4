@@ -335,8 +335,7 @@ control controlcpu(
   alusrccpu,
   regwritecpu);
 
-//Register File connections - by Kevin
-registerfile registerfilecpu(readReg1cpu);
+
 
 
 
@@ -348,6 +347,13 @@ muxRegDestination muxRegDestcpu(
   regdstcpu,
   towriteregistercpu
   );
+
+
+//Register File connections - by Kevin
+registerfile registerfilecpu(readReg1cpu);
+
+
+
 
 wire [31:0] toalucpu;
 
@@ -365,6 +371,14 @@ muxMemtoReg muxmemtoregcpu(
   memtoregcpu,
   outputtoregwrite
   );
+
+
+
+
+
+
+
+
 
 
 
