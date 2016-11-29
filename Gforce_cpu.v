@@ -101,7 +101,7 @@ module muxMemtoReg (solution, solution2 , memtoReg , outputval3);
 /*Instruction Memory - by Donato Kava
   Slices up the instruction we give to cpu into 6 parts.*/
 module instructmem(
-    input wire  [31:0]  inputVal,
+    input wire [31:0]  inputVal,
     output wire [31:26] instruct1,
     output wire [25:21] instruct2,
     output wire [20:16] instruct3,
@@ -284,6 +284,7 @@ module mipscpu(
     input wire [31:0] instrword,
     input wire newinstr);
 
+// Made wires to store the output signals
     wire [5:0] opcodecpu;
     wire [4:0] readReg1cpu;
     wire [4:0] readReg2cpu;
@@ -291,6 +292,7 @@ module mipscpu(
     wire [14:0] signExtendercpu;
     wire [5:0] aluctrlcpu;
 
+//Connecting instruction to instruction memory
 instructmem myinsmem(instrword,
         opcodecpu,
         readReg1cpu,
@@ -299,6 +301,8 @@ instructmem myinsmem(instrword,
         signExtendercpu,
         aluctrlcpu);
 
+
+// Made some output wires for the control signals
   wire regdstcpu;
   wire branchcpu;
   wire memtoreadcpu;
@@ -308,6 +312,7 @@ instructmem myinsmem(instrword,
   wire alusrccpu;
   wire regwritecpu;
 
+//inputs opcode made by instructmem and assign signals based on opcode
 control mycontrol(
   opcodecpu,
   regdstcpu,
@@ -319,11 +324,17 @@ control mycontrol(
   alusrccpu,
   regwritecpu);
 
+
+//Connect RegDest signal from control and the other parts of instruction word to mux
+//that later connects to register file
 muxRegDestination muxRegDest(
   readReg2cpu,
   mux1rdcpu,
   regdstcpu,
+  towriteregistercpu
   );
+
+
 
 
 
