@@ -276,6 +276,17 @@ module registerfile(
     end
     endmodule
 
+//Sign extend component
+module signextend(inputVal,outputVal);
+
+    input [15:0] inputVal;
+    wire  [15:0] inputVal;
+    output[31:0] outputVal;
+    wire  [31:0] outputVal;
+
+    assign outputVal = {{16{inputVal[15]}} , inputVal}; // 16 bit to 32 extension preserving the sign
+
+    endmodule
 
 /*Main mipscpu*/
 module mipscpu(
