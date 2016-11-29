@@ -145,7 +145,7 @@ module instructmem(
    output signals dependant for the Opcode.
 */
 module control(
-      input wire [5:0]  Opcode,
+      input wire [5:0] Opcode,
       output reg RegDst,
       output reg Branch,
       output reg MemtoRead,
@@ -284,32 +284,46 @@ module mipscpu(
     input wire [31:0] instrword,
     input wire newinstr);
 
-    wire [5:0] Opcode;
-    wire [4:0] readReg1;
-    wire [4:0] readReg2;
-    wire [4:0] mux1rd;
-    wire [14:0] signExtender;
-    wire [5:0] aluctrl;
+    wire [5:0] opcodecpu;
+    wire [4:0] readReg1cpu;
+    wire [4:0] readReg2cpu;
+    wire [4:0] mux1rdcpu;
+    wire [14:0] signExtendercpu;
+    wire [5:0] aluctrlcpu;
 
 instructmem myinsmem(instrword,
-        opcode,
-        readReg1,
-        readreg2,
-        mux1rd,
-        signExtender,
-        aluctrl);
+        opcodecpu,
+        readReg1cpu,
+        readreg2cpu,
+        mux1rdcpu,
+        signExtendercpu,
+        aluctrlcpu);
 
-  reg regdstcpu;
-  reg branchcpu;
-  reg memtoreadcpu;
-  reg memtoregcpu;
-  reg [1:0] aluopcpu;
-  reg memtowritecpu;
-  reg
-control mycontrol(opcode,
-                  );
-//DataPath
-muxRegDestination muxRegDest();
+  wire regdstcpu;
+  wire branchcpu;
+  wire memtoreadcpu;
+  wire memtoregcpu;
+  wire [1:0] aluopcpu;
+  wire memtowritecpu;
+  wire alusrccpu;
+  wire regwritecpu;
+
+control mycontrol(
+  opcodecpu,
+  regdstcpu,
+  branchcpu,
+  memtoreadcpu,
+  memtoregcpu,
+  aluopcpu,
+  memtowritecpu,
+  alusrccpu,
+  regwritecpu);
+
+muxRegDestination muxRegDest(
+  readReg2cpu,
+  mux1rdcpu,
+  regdstcpu,
+  );
 
 
 
