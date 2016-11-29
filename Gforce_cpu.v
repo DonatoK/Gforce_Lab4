@@ -284,6 +284,32 @@ module mipscpu(
     input wire [31:0] instrword,
     input wire newinstr);
 
+    wire [5:0] Opcode;
+    wire [4:0] readReg1;
+    wire [4:0] readReg2;
+    wire [4:0] mux1rd;
+    wire [14:0] signExtender;
+    wire [5:0] aluctrl;
+
+instructmem myinsmem(instrword,
+        opcode,
+        readReg1,
+        readreg2,
+        mux1rd,
+        signExtender,
+        aluctrl);
+
+  reg regdstcpu;
+  reg branchcpu;
+  reg memtoreadcpu;
+  reg memtoregcpu;
+  reg [1:0] aluopcpu;
+  reg memtowritecpu;
+  reg
+control mycontrol(opcode,
+                  );
+//DataPath
+muxRegDestination muxRegDest();
 
 
 
