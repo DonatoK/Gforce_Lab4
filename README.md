@@ -12,7 +12,8 @@ https://help.github.com/articles/good-resources-for-learning-git-and-github/
 
 Group Assignments
 
-Luis - Control Unit
+Luis - Control Unit, Connecting instruction memory to instruction word of mips cpu, connected the muxes to their respective paths.
+
 Kevin - Muxes and ALU control
 Donato - Instruction memory slicing
 Eberado - Data Memory
