@@ -334,11 +334,20 @@ muxRegDestination muxRegDestcpu(
   towriteregistercpu
   );
 
+wire [31:0] toalucpu;
 
+muxALUSrc muxAlusrccpu(
+  readdata2cpu,
+  signextedcpu,
+  toalucpu,
+  );
 
-muxALUSrc muxAlusrccpu();
-
-muxMemtoReg muxmemtoregcpu();
+wire [31:0] outputtoregwrite;
+muxMemtoReg muxmemtoregcpu(
+  readdata,
+  aluresult,
+  outputtoregwrite
+  );
 
 
 
