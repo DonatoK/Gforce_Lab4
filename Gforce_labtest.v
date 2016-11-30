@@ -11,7 +11,7 @@ always
 begin
 #1 clk = ~clk;
 end
-
+//
 begin
 //instructions for
 end
