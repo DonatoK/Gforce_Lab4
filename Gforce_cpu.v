@@ -302,6 +302,16 @@ module mipscpu(
     wire [15:11] mux1rdcpu;
     wire [15:0] signExtendercpu;
     wire [5:0] alufunctioncpu;
+    // Made some output wires for the control signals
+    wire regdstcpu;
+    wire branchcpu;
+    wire memtoreadcpu;
+    wire memtoregcpu;
+    wire [1:0] aluopcpu;
+    wire memtowritecpu;
+    wire alusrccpu;
+    wire regwritecpu;
+    wire [31:0] op2alu;
 
 //Connecting instruction to instruction memory
 instructmem insmemcpu(
@@ -314,15 +324,6 @@ instructmem insmemcpu(
         alufunctioncpu);
 
 
-// Made some output wires for the control signals
-  wire regdstcpu;
-  wire branchcpu;
-  wire memtoreadcpu;
-  wire memtoregcpu;
-  wire [1:0] aluopcpu;
-  wire memtowritecpu;
-  wire alusrccpu;
-  wire regwritecpu;
 
 /*Inputs opcode made by instructmem and assign signals based on opcode
 Signal names can be used on other devices to connect them together*/
@@ -338,9 +339,6 @@ control controlcpu(
   regwritecpu);
 
 
-
-
-
 /*Connect RegDest signal from control and the other parts of instruction word to mux
 that later connects to register file*/
 muxRegDestination muxRegDestcpu(
@@ -350,13 +348,7 @@ muxRegDestination muxRegDestcpu(
   towriteregistercpu);
 
 
-//Register File connections - by Kevin
-//registerfile registerfilecpu(readReg1cpu);
 
-
-
-
-wire [31:0] op2alu;
 
 //Decides if wether or not alu will use offset .
 muxALUSrc muxAlusrccpu(
@@ -391,9 +383,6 @@ alu alucpu(
   aluctrltoalu,
   aluresultcpu);
 
-//wire [31:0] readdata1cpu;
-//wire [31:0] readdata2cpu;
-
 
 
 registerfile registerfilecpu(
@@ -413,5 +402,8 @@ signextend cpusignextende(
   );
 
 Memory memcpu();
+
+
+
 
 endmodule
