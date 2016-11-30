@@ -8,7 +8,7 @@ It will also be used to start putting things to gether.
 /* ALU Control - by Kevin Valdez
  Takes ALUOp code from control and read function instruction and sets out
  Alu control code to tell alu which operation to do. */
-module ALUControl (ALUOp , Function , Output );
+module ALUControl (ALUOp , Function , Output);
 
   input  wire  [1:0] ALUOp;
   input  wire  [5:0] Function;
@@ -361,7 +361,7 @@ wire [31:0] op2alu;
 //Decides if wether or not alu will use offset .
 muxALUSrc muxAlusrccpu(
   readdata2cpu,
-  signextedcpu,
+  signextresultcpu,
   alusrccpu,
   op2alu);
 
@@ -407,7 +407,10 @@ registerfile registerfilecpu(
   );
 
 
-
+signextend cpusignextende(
+  signextedcpu,
+  signextresultcpu
+  );
 
 
 
