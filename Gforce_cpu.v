@@ -368,7 +368,7 @@ ALUControl alucontrolcpu(
 
 //In here replace readdata1cpu with register file read data 1 output name
 alu alucpu(
-  readdata1cpu,
+  readdata1c0pu,
   op2alu,
   aluctrltoalu,
   aluresultcpu);
