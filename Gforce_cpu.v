@@ -296,21 +296,22 @@ module mipscpu(
     input wire newinstr);
 
 // Made wires to store the output signals
-    wire [5:0] opcodecpu;
-    wire [4:0] readReg1cpu;
-    wire [4:0] readReg2cpu;
-    wire [4:0] mux1rdcpu;
-    wire [14:0] signExtendercpu;
-    wire [5:0] aluctrlcpu;
+    wire [31:26] opcodecpu;
+    wire [25:21] readReg1cpu;
+    wire [20:16] readReg2cpu;
+    wire [15:11] mux1rdcpu;
+    wire [15:0] signExtendercpu;
+    wire [5:0] alufunctioncpu;
 
 //Connecting instruction to instruction memory
-instructmem insmemcpu(instrword,
+instructmem insmemcpu(
+        instrword,
         opcodecpu,
         readReg1cpu,
         readreg2cpu,
         mux1rdcpu,
         signExtendercpu,
-        aluctrlcpu);
+        alufunctioncpu);
 
 
 // Made some output wires for the control signals
@@ -323,7 +324,8 @@ instructmem insmemcpu(instrword,
   wire alusrccpu;
   wire regwritecpu;
 
-//inputs opcode made by instructmem and assign signals based on opcode
+/*Inputs opcode made by instructmem and assign signals based on opcode
+Signal names can be used on other devices to connect them together*/
 control controlcpu(
   opcodecpu,
   regdstcpu,
@@ -339,8 +341,8 @@ control controlcpu(
 
 
 
-//Connect RegDest signal from control and the other parts of instruction word to mux
-//that later connects to register file
+/*Connect RegDest signal from control and the other parts of instruction word to mux
+that later connects to register file*/
 muxRegDestination muxRegDestcpu(
   readReg2cpu,
   mux1rdcpu,
@@ -355,16 +357,20 @@ registerfile registerfilecpu(readReg1cpu);
 
 
 
-wire [31:0] toalucpu;
+wire [31:0] op2alu;
 
+//Decides if wether or not alu will use offset .
 muxALUSrc muxAlusrccpu(
   readdata2cpu,
   signextedcpu,
   alusrccpu,
-  toalucpu,
+  op2alu
   );
 
 wire [31:0] outputtoregwrite;
+
+/*This mux will decide if either the value to be written back to register file
+is either the result from alu, or from memory.*/
 muxMemtoReg muxmemtoregcpu(
   readdata,
   aluresult,
@@ -372,8 +378,16 @@ muxMemtoReg muxmemtoregcpu(
   outputtoregwrite
   );
 
+wire [3:0] aluctrltoalu;
 
+ALUControl alucontrolcpu(
+  aluopcpu,
+  alufunctioncpu,
+  aluctrltoalu);
 
+wire [31:0] aluresultcpu;
+//In here replace readdata1cpu with register file read data 1 output name
+alu alucpu(readdata1cpu,op2alu,aluctrltoalu,aluresultcpu);
 
 
 
