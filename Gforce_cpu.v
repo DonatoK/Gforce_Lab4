@@ -347,12 +347,11 @@ muxRegDestination muxRegDestcpu(
   readReg2cpu,
   mux1rdcpu,
   regdstcpu,
-  towriteregistercpu
-  );
+  towriteregistercpu);
 
 
 //Register File connections - by Kevin
-registerfile registerfilecpu(readReg1cpu);
+//registerfile registerfilecpu(readReg1cpu);
 
 
 
@@ -364,8 +363,7 @@ muxALUSrc muxAlusrccpu(
   readdata2cpu,
   signextedcpu,
   alusrccpu,
-  op2alu
-  );
+  op2alu);
 
 wire [31:0] outputtoregwrite;
 
@@ -387,10 +385,26 @@ ALUControl alucontrolcpu(
 
 wire [31:0] aluresultcpu;
 //In here replace readdata1cpu with register file read data 1 output name
-alu alucpu(readdata1cpu,op2alu,aluctrltoalu,aluresultcpu);
+alu alucpu(
+  readdata1cpu,
+  op2alu,
+  aluctrltoalu,
+  aluresultcpu);
+
+//wire [31:0] readdata1cpu;
+//wire [31:0] readdata2cpu;
 
 
 
+registerfile registerfilecpu(
+  readReg1cpu,
+  readReg2cpu,
+  towriteregistercpu,
+  outputtoregwrite,
+  regwritecpu,
+  readdata1cpu,
+  readdata2cpu
+  );
 
 
 
