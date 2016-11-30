@@ -412,6 +412,6 @@ signextend cpusignextende(
   signextresultcpu
   );
 
-
+Memory memcpu();
 
 endmodule
