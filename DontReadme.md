@@ -17,3 +17,7 @@ Luis - Control Unit, Connecting instruction memory to instruction word of mips c
 Kevin - Muxes and ALU control
 Donato - Instruction memory slicing
 Eberado - Data Memory
+
+
+
+Doesnt work
