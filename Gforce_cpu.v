@@ -306,12 +306,12 @@ module mipscpu(
 
 //Connecting instruction to instruction memory
 instructmem insmemcpu(
-        instrword,
-        opcodecpu,
-        readReg1cpu,
-        readreg2cpu,
-        mux1rdcpu,
-        signExtendercpu,
+        instrword,  //From testbench
+        opcodecpu,  //Goes to control
+        readReg1cpu, //Goes to register file
+        readReg2cpu, //Goes to register file and mux
+        mux1rdcpu,   //Rd address to mux
+        signExtendercpu, //
         alufunctioncpu);
 
 
