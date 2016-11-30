@@ -194,34 +194,22 @@ module control(
 
 /* Data Memory - Eberado Sanchez*/
 
-module Memory (CS, WE, ClK, ADDR, Mem_Bus);
+module Memory (wrctrl,rdctrl,addr,wrdata,rddata);
 
-    	input CS, WE, ClK;
-    	input [31:0] ADDR;
-    	inout[31:0] Mem_Bus;
+    	input wire wrctrl,rdctrl;
+    	input wire [31:0] addr;
+      input wire [31:0] wrdata;
+      output reg [31:0] rddata;
 
-    	reg [31:0] data_out;
-    	reg [31:0] RAM [0:127];
+    	reg [31:0] mem_file [0:127];
 
-    	integer i;
-    	reg [6:0] counter;
 
-    	initial begin
-    		for(i=0; i<128; i=i+1)
-    			begin
-    				RAM[i] = 32'd0;
-    			end
 
-    	end
+  always @(posedge wrctrl or posedge rdctrl) begin
+    rddata = (rdctrl) ? mem_file[addr]:0;
+    mem_file[addr] = (wrctrl) ? wrdata:0;
 
-    	assign Mem_Bus = ((CS == 1'b0) || (WE == 1'b1)) ? 32'bZ : data_out;
-
-    	always @(negedge ClK)
-    	begin
-    		if ((CS == 1'b1) && (WE == 1'b1))
-    			RAM[ADDR] <= Mem_Bus[31:0];
-    		data_out <= RAM[ADDR];
-    	end
+ end
 
     endmodule
 
@@ -305,13 +293,16 @@ module mipscpu(
     // Made some output wires for the control signals
     wire regdstcpu;
     wire branchcpu;
-    wire memtoreadcpu;
+    wire memreadcpu;
     wire memtoregcpu;
     wire [1:0] aluopcpu;
-    wire memtowritecpu;
+    wire memwritecpu;
     wire alusrccpu;
     wire regwritecpu;
     wire [31:0] op2alu;
+    wire [31:0] outputtoregwrite;
+    wire [3:0] aluctrltoalu;
+    wire [31:0] aluresultcpu;
 
 //Connecting instruction to instruction memory
 instructmem insmemcpu(
@@ -331,10 +322,10 @@ control controlcpu(
   opcodecpu,
   regdstcpu,
   branchcpu,
-  memtoreadcpu,
+  memreadcpu,
   memtoregcpu,
   aluopcpu,
-  memtowritecpu,
+  memwritecpu,
   alusrccpu,
   regwritecpu);
 
@@ -357,7 +348,6 @@ muxALUSrc muxAlusrccpu(
   alusrccpu,
   op2alu);
 
-wire [31:0] outputtoregwrite;
 
 /*This mux will decide if either the value to be written back to register file
 is either the result from alu, or from memory.*/
@@ -368,14 +358,14 @@ muxMemtoReg muxmemtoregcpu(
   outputtoregwrite
   );
 
-wire [3:0] aluctrltoalu;
+
 
 ALUControl alucontrolcpu(
   aluopcpu,
   alufunctioncpu,
   aluctrltoalu);
 
-wire [31:0] aluresultcpu;
+
 //In here replace readdata1cpu with register file read data 1 output name
 alu alucpu(
   readdata1cpu,
@@ -401,7 +391,13 @@ signextend cpusignextende(
   signextresultcpu
   );
 
-Memory memcpu();
+Memory memcpu(
+  memwritecpu,
+  memreadcpu,
+  aluresultcpu,
+  readdata2cpu,
+  readdata
+  );
 
 
 
