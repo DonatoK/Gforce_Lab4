@@ -13,7 +13,7 @@
 // d9e6678  an hour ago
 // @tronophono tronophono Updated the CPU
 // 1 contributor
-// RawBlameHistory     
+// RawBlameHistory
 // 406 lines (331 sloc)  9.53 KB
 /*
 This files will contain all components that the CPU has inside of it
@@ -413,13 +413,13 @@ Memory memcpu(
   readdata2cpu,
   readdata
   );
-
+endmodule
 
 
 
 //Test Bench for CPU
 //Runs clock, change register instructions, verify correct output
-module testbenchGFORCE;
+module testybench();
 //input registers
 
 //output reading register
@@ -427,14 +427,17 @@ reg Reset, Clock, Newinstr;
 reg [31:0] Instrword;
 
 
-mipscpu mycpu( Reset,
-               Clock,
-			    Instrword,
-			   Newinstr);
-			   
+mipscpu mycpu(
+  Reset,
+  Clock,
+  Instrword,
+	Newinstr);
+
  //mipscpu.mycpu.mem_file[0] = 10; //a = 10
 
-initial 
+mycpu.memcpu.mem_file[0] = 10;
+
+initial
 begin
 Reset = 0;
 Clock = 0;
@@ -443,18 +446,18 @@ Newinstr = 0;
 end
 
 
-always 
+always
 
  #1 Clock = ~Clock;
- 
-initial 
-begin
+
+
+initial
+  begin
 
 
 
 
-end 
-
+  end
 
 
 
@@ -462,6 +465,3 @@ end
 
 
 endmodule
-
-
-
