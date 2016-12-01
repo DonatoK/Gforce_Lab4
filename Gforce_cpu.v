@@ -107,7 +107,8 @@ module instructmem(
     output wire [20:16] instruct3,
     output wire [15:11] instruct4,
     output wire [15:0]  instruct5,
-    output wire [5:0]   instruct6);
+    output wire [5:0]   instruct6
+    input wire newinstruction);
     //instruction mememory, takes register input(program instruction)
     //and splits it up 6 parts
 
@@ -119,7 +120,8 @@ module instructmem(
     reg [15:0] inInstruct5;
     reg [5:0]  inInstruct6;
     //always sets inputval bits to their internal regs
-    always
+
+    always@(posedge newinstruction)
     begin
     #1
     inInstruct1 = inputVal[31:26];
@@ -323,6 +325,9 @@ module mipscpu(
     wire [31:0] outputtoregwrite;
     wire [3:0] aluctrltoalu;
     wire [31:0] aluresultcpu;
+
+
+
 
 //Connecting instruction to instruction memory
 instructmem insmemcpu(
