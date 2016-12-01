@@ -72,7 +72,7 @@ module muxRegDestination(input1,input2, RegDestination ,outputval);
   output wire[4:0] outputval;
   input wire RegDestination;
 
-  assign outputval = (RegDestination)? input1 : input2;
+  assign outputval = (RegDestination)? input2 : input1;
 
   endmodule
   /******************************************************************************************************************************************/
@@ -169,10 +169,10 @@ module control(
   RegDst = 0;
   Branch = 0;
   MemtoReg = 0;
-  ALUOp = 0;
+  ALUOp = 3;
   ALUSrc = 0;
-  MemtoRead = 0;
-  MemtoWrite=0;
+  MemtoRead = 0 ;
+  MemtoWrite = 0;
   RegWrite = 0;
   end
 
@@ -246,7 +246,7 @@ module Memory (wrctrl,rdctrl,addr,wrdata,rddata,rst);
     	reg [31:0] mem_file[0:127];
       integer i;
 
-  always@(posedge rst) begin
+  initial begin
       for(i=0;i<128;i=i+1)
         begin
           mem_file[i] = 32'b0;
@@ -315,7 +315,7 @@ module registerfile(
     end
 
 
-    always @ (readReg1,readReg2)begin
+    always@(*)begin
       readData1 = regfile[readReg1];
       readData2 = regfile[readReg2];
     end
