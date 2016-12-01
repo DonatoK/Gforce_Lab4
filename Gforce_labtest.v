@@ -28,8 +28,8 @@ mycpu.memcpu.mem_file[2] = 6;//c
 end
 
 
-always
-#1 Clock = ~Clock;
+always #1 Clock = ~Clock;
+always #2 Reset = ~Reset;
 //#30 Reset = ~Reset;
 // d = a+b-c
 initial
