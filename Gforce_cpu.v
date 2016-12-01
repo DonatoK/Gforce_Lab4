@@ -19,40 +19,37 @@ module ALUControl (ALUOp , Function , Output);
   	case(ALUOp)
 
   	0: begin
-  		 $display("ALUOp = 00");
   		 Output = 4'b0010;
   	   end
   	1: begin
-  		 $display("AlUOp = 01");
+
   		 Output = 4'b0110;
          end
   	2: begin
-  		 $display("ALUOp = 10");
+
   		 if (Function == 6'b100000)
   		    begin
   			Output = 4'b0010; // add
-  			$display("add");
+
   			end
   		 else if(Function == 6'b100010)
   			begin
   			Output = 4'b0110; // subtract
-  			$display("sub");
+
   			end
   		 else if(Function == 6'b100100)
   		    begin
   			Output = 4'b0000; // and
-  			$display("and");
+
   			end
 
   		 else if(Function == 6'b100101)
   		    begin
   			Output = 4'b0001; // or
-  			$display("or");
   			end
   		 else if(Function == 6'b101010)
   		    begin
   			Output = 4'b0111; // SLT (set less than)
-  			$display("slt");
   			end
         end
 
@@ -166,11 +163,7 @@ module control(
 
 */
   always@(posedge rst) begin
-  RegDst = 0;
-  Branch = 0;
   MemtoReg = 0;
-  ALUOp = 3;
-  ALUSrc = 0;
   MemtoRead = 0 ;
   MemtoWrite = 0;
   RegWrite = 0;
@@ -201,7 +194,7 @@ module control(
         endcase
       end
 
-  always@(negedge clock) begin
+  always@(posedge clock) begin
         case(Opcode)
           0: begin
               MemtoRead <= 0;
@@ -216,7 +209,7 @@ module control(
         end
 
 
-  always@(posedge clock) begin
+  always@(negedge clock) begin
     case(Opcode)
     0: begin
       MemtoWrite<=0;
@@ -227,8 +220,8 @@ module control(
       RegWrite <= 1;
       end
     43: begin
-        MemtoWrite <= 1;
-        RegWrite <= 0;
+      MemtoWrite <= 1;
+      RegWrite <= 0;
         end
     endcase
   end
