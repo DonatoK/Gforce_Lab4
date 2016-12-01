@@ -1,0 +1,37 @@
+$date
+	Tue Nov 29 16:46:45 2016
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module tests $end
+$var wire 4 ! Out [3:0] $end
+$var reg 6 " Funct [5:0] $end
+$var reg 2 # aluOp [1:0] $end
+$scope module t_ALU $end
+$var wire 2 $ ALUOp [1:0] $end
+$var wire 6 % Function [5:0] $end
+$var reg 4 & Output [3:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b10 &
+b0 %
+b0 $
+b0 #
+b0 "
+b10 !
+$end
+#1
+b10 #
+b10 $
+#2
+b111 !
+b111 &
+b101010 "
+b101010 %
