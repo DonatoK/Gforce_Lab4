@@ -1,19 +1,78 @@
-//Test Bench for CPU
-//Runs clock, change register instructions, verify correct output
-module testbenchGFORCE;
+module testybench();
 //input registers
 
 //output reading register
+reg Reset, Clock, Newinstr;
+reg [31:0] Instrword;
 
-mipscpu.memcpu.mem_file[0] = 10; //a = 10
+
+mipscpu mycpu(
+  Reset,
+  Clock,
+  Instrword,
+	Newinstr);
+
+ //mipscpu.mycpu.mem_file[0] = 10; //a = 10
+
+
+
+initial
+begin
+Reset = 0;
+Clock = 0;
+Instrword = 0;
+Newinstr = 0;
+end
+
 
 always
-begin
-#1 clk = ~clk;
+ #1 Clock = ~Clock;
+// d = a+b-c
+initial
+  begin
+  //#1 Reset =1;
+  //#1 Reset = 0;
+  #30;
+
+  mycpu.memcpu.mem_file[0] = 10;//a
+
+  mycpu.memcpu.mem_file[1] = 22;//b
+  mycpu.memcpu.mem_file[2] = 6;//c
+
+  Instrword = 32'b10001100000000010000000000000000;    //load a to r1
+  Newinstr = 0;
+  #1 Newinstr = 1;
+  #1 Newinstr = 0;
+  #10;
+  $display("REG %h",mycpu.registerfilecpu.regfile[0]);
+  #1 Reset =1;
+  #1 Reset = 0;
+  Instrword = 32'b10001100000000100000000000000001; //load b
+  Newinstr = 0;
+  #1 Newinstr = 1;
+  #1 Newinstr = 0;
+  #10;
+  $display("REG %h",mycpu.registerfilecpu.regfile[1]);
+  #1 Reset =1;
+  #1 Reset = 0;
+  Instrword = 32'b10001100000000110000000000000010;
+  Newinstr = 0;
+  #1 Newinstr = 1;
+  #1 Newinstr = 0;
+  #10;
+  $display("REG %h",mycpu.registerfilecpu.regfile[2]);
+
+
+
+
+  $finish;
 end
-//
-begin
-//instructions for
-end
+
+initial
+ begin
+    $dumpfile("test.vcd");
+    $dumpvars(0,testybench);
+ end
+
 
 endmodule

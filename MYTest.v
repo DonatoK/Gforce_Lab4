@@ -434,33 +434,9 @@ mipscpu mycpu(
 	Newinstr);
 
  //mipscpu.mycpu.mem_file[0] = 10; //a = 10
-
+initial begin
 mycpu.memcpu.mem_file[0] = 10;
-
-initial
-begin
-Reset = 0;
-Clock = 0;
-Instrword = 0;
-Newinstr = 0;
 end
-
-
-always
-
- #1 Clock = ~Clock;
-
-
-initial
-  begin
-
-
-
-
-  end
-
-
-
 
 
 

@@ -156,7 +156,8 @@ module control(
   output reg [1:0] ALUOp,
   output reg MemtoWrite,
   output reg ALUSrc,
-  output reg RegWrite);
+  output reg RegWrite,
+  input rst);
 /*
 *This module sets the control signals for the control Path
 *
@@ -164,15 +165,25 @@ module control(
 
 
 */
+  always@(posedge rst) begin
+  RegDst = 0;
+  Branch = 0;
+  MemtoReg = 0;
+  ALUOp = 0;
+  ALUSrc = 0;
+  MemtoRead = 0;
+  MemtoWrite=0;
+  RegWrite = 0;
+  end
 
   always@(Opcode) begin
       case (Opcode)
         0 : begin
-            RegDst = 1;
-            Branch = 0;
-            MemtoReg = 0;
-            ALUOp = 2;
-            ALUSrc = 0;
+        RegDst = 1;
+        Branch = 0;
+        MemtoReg = 0;
+        ALUOp = 2;
+        ALUSrc = 0;
             end
         35:begin
             RegDst = 0;
@@ -183,9 +194,6 @@ module control(
             end
         43:begin
             ALUSrc = 1;
-            RegWrite = 0;
-            MemtoRead = 0;
-            MemtoWrite = 1;
             Branch = 0;
             ALUOp = 0;
            end
@@ -193,46 +201,67 @@ module control(
         endcase
       end
 
-  always@(posedge clock) begin
+  always@(negedge clock) begin
         case(Opcode)
           0: begin
               MemtoRead <= 0;
-              MemtoWrite <= 0;
-              RegWrite <= 1;
               end
           35: begin
               MemtoRead <= 1;
-              MemtoWrite <= 0;
-              RegWrite <= 1;
               end
           43: begin
               MemtoRead <= 0;
-              MemtoWrite <= 1;
-              RegWrite <= 0;
               end
           endcase
         end
+
+
+  always@(posedge clock) begin
+    case(Opcode)
+    0: begin
+      MemtoWrite<=0;
+      RegWrite<=1;
+      end
+    35: begin
+      MemtoWrite<=0;
+      RegWrite <= 1;
+      end
+    43: begin
+        MemtoWrite <= 1;
+        RegWrite <= 0;
+        end
+    endcase
+  end
 endmodule
 
 /* Data Memory - Eberado Sanchez*/
 
-module Memory (wrctrl,rdctrl,addr,wrdata,rddata);
+module Memory (wrctrl,rdctrl,addr,wrdata,rddata,rst);
 
     	input wire wrctrl,rdctrl;
     	input wire [31:0] addr;
       input wire [31:0] wrdata;
       output reg [31:0] rddata;
-
+      input rst;
     	reg [31:0] mem_file[0:127];
+      integer i;
+
+  always@(posedge rst) begin
+      for(i=0;i<128;i=i+1)
+        begin
+          mem_file[i] = 32'b0;
+        end
+  end
 
 
-
-  always @(posedge wrctrl or posedge rdctrl) begin
+  always @(posedge rdctrl) begin
     rddata = (rdctrl) ? mem_file[addr]:0;
-    mem_file[addr] = (wrctrl) ? wrdata:0;
 
  end
 
+always @(posedge wrctrl) begin
+    mem_file[addr] = (wrctrl) ? wrdata:0;
+ end
     endmodule
 
 /* ALU component*/
@@ -269,20 +298,31 @@ module registerfile(
       input wire [31:0] writeData,
       input wire regWrite,
       output reg [31:0] readData1,
-      output reg [31:0] readData2);
+      output reg [31:0] readData2,
+      input wire rst,
+      input wire clock);
 
     //used to make a array of 32 32-bit registers
     reg [31:0] regfile[31:0];
-
+    integer i;
     //Registerfile will always read registers but will only write to them when
     //regWrite is set.
-    always @ (readReg1,readReg2,regWrite) begin
+    initial begin
+        for(i=0;i<32;i=i+1)
+          begin
+            regfile[i] = 32'b0;
+          end
+    end
+
+
+    always @ (readReg1,readReg2)begin
       readData1 = regfile[readReg1];
       readData2 = regfile[readReg2];
-      if(regWrite == 1)
+    end
+
+    always@(posedge clock) begin
+      if(regWrite==1)
         regfile[writeReg] = writeData;
-
-
     end
     endmodule
 
@@ -290,9 +330,7 @@ module registerfile(
 module signextend(inputVal,outputVal);
 
     input [15:0] inputVal;
-    wire  [15:0] inputVal;
-    output[31:0] outputVal;
-    wire  [31:0] outputVal;
+    output [31:0] outputVal;
 
     assign outputVal = {{16{inputVal[15]}} , inputVal}; // 16 bit to 32 extension preserving the sign
 
@@ -359,7 +397,8 @@ control controlcpu(
   aluopcpu,
   memwritecpu,
   alusrccpu,
-  regwritecpu);
+  regwritecpu,
+  reset);
 
 
 /*Connect RegDest signal from control and the other parts of instruction word to mux
@@ -414,12 +453,13 @@ registerfile registerfilecpu(
   outputtoregwrite,
   regwritecpu,
   readdata1cpu,
-  readdata2cpu
-  );
+  readdata2cpu,
+  reset,
+  clk);
 
 
-signextend cpusignextende(
-  signextedcpu,
+signextend cpusignextender(
+  signExtendercpu,
   signextresultcpu
   );
 
@@ -428,7 +468,8 @@ Memory memcpu(
   memreadcpu,
   aluresultcpu,
   readdata2cpu,
-  readdata
+  readdata,
+  reset
   );
 
 
