@@ -54,7 +54,7 @@ module ALUControl (ALUOp , Function , Output);
   			Output = 4'b0111; // SLT (set less than)
   			$display("slt");
   			end
-         end
+        end
 
   	endcase
 
@@ -67,9 +67,9 @@ module ALUControl (ALUOp , Function , Output);
    the control signals RegDst, ALUSrc, MemtoReg.
 */
 module muxRegDestination(input1,input2, RegDestination ,outputval);
-  input wire [5:0] input1;
-  input wire [5:0] input2;
-  output wire[5:0] outputval;
+  input wire [4:0] input1;
+  input wire [4:0] input2;
+  output wire[4:0] outputval;
   input wire RegDestination;
 
   assign outputval = (RegDestination)? input1 : input2;
@@ -107,8 +107,8 @@ module instructmem(
     output wire [20:16] instruct3,
     output wire [15:11] instruct4,
     output wire [15:0]  instruct5,
-    output wire [5:0]   instruct6
-    input wire newinstruction);
+    output wire [5:0]   instruct6,
+    input wire newinstruction1);
     //instruction mememory, takes register input(program instruction)
     //and splits it up 6 parts
 
@@ -121,7 +121,7 @@ module instructmem(
     reg [5:0]  inInstruct6;
     //always sets inputval bits to their internal regs
 
-    always@(posedge newinstruction)
+    always@(posedge newinstruction1)
     begin
     #1
     inInstruct1 = inputVal[31:26];
@@ -240,7 +240,7 @@ module alu(
       input wire [31:0] op1,
       input wire [31:0] op2,
       input wire [3:0] ctrl,
-      output reg [31:0] result
+      output reg [31:0] result3
       );
 
       //Trigger when ctrl changes values
@@ -249,13 +249,13 @@ module alu(
       always@(ctrl) begin
         case(ctrl)
           //Instructions as shown in table in pg 259
-          0 : result = op1 & op2;
-          1 : result = op1 | op2;
-          2 : result = op1 + op2;
-          6 : result = op1 - op2;
-          7 : result = op1 < op2;
-          12: result = ~(op1|op2);
-          default: result = 0;  //Read that most ALUs have a 0 when
+          0 : result3 = op1 & op2;
+          1 : result3 = op1 | op2;
+          2 : result3 = op1 + op2;
+          6 : result3 = op1 - op2;
+          7 : result3 = op1 < op2;
+          12: result3 = ~(op1|op2);
+          default: result3 = 0;  //Read that most ALUs have a 0 when
                                 // no valid operation was chosen
         endcase
       end
@@ -301,7 +301,7 @@ module signextend(inputVal,outputVal);
 /*Main mipscpu*/
 module mipscpu(
     input wire reset,
-    input wire clock,
+    input wire clk,
     input wire [31:0] instrword,
     input wire newinstr);
 
@@ -325,8 +325,13 @@ module mipscpu(
     wire [31:0] outputtoregwrite;
     wire [3:0] aluctrltoalu;
     wire [31:0] aluresultcpu;
-
-
+    wire [31:0] readdata2cpu;
+    wire [31:0] readdata1cpu;
+    wire [31:0] signextresultcpu;
+    wire [31:0] readdata;
+    wire [31:0] aluresult;
+    wire [4:0] towriteregistercpu;
+    wire [15:0] signextedcpu;
 
 
 //Connecting instruction to instruction memory
@@ -337,14 +342,15 @@ instructmem insmemcpu(
         readReg2cpu, //Goes to register file and mux
         mux1rdcpu,   //Rd address to mux
         signExtendercpu, //
-        alufunctioncpu);
+        alufunctioncpu,
+        newinstr);
 
 
 
 /*Inputs opcode made by instructmem and assign signals based on opcode
 Signal names can be used on other devices to connect them together*/
 control controlcpu(
-  clock,
+  clk,
   opcodecpu,
   regdstcpu,
   branchcpu,
@@ -394,7 +400,7 @@ ALUControl alucontrolcpu(
 
 //In here replace readdata1cpu with register file read data 1 output name
 alu alucpu(
-  readdata1c0pu,
+  readdata1cpu,
   op2alu,
   aluctrltoalu,
   aluresultcpu);
