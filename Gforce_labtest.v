@@ -64,6 +64,12 @@ $display("Register 3: %d",mycpu.registerfilecpu.regfile[3]);
   #10;
 
   $display("Register 4: %d",mycpu.registerfilecpu.regfile[4]);
+  Instrword = 32'b00000000001000100010000000100000;
+  Newinstr = 0;
+  #1 Newinstr = 1;
+  #1 Newinstr = 0;
+  #10;
+  $display("Register 4: %d",mycpu.registerfilecpu.regfile[4]);
 
   /*
   #1Instrword = 32'b00000000100000110010100000100010;
