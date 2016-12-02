@@ -298,7 +298,7 @@ module alu(
       //Can change the blocking statements to nonblocking statements
       //However changes in the testbench will be required(remove #'s , except for the op1)
 
-      always@(op1 or op2 or ctrl) begin
+      always@(*) begin
         case(ctrl)
           //Instructions as shown in table in pg 259
           0 : result3 = op1 & op2;
@@ -350,7 +350,7 @@ module registerfile(
         readData2 = regfile[readReg2];
       end
 
-    always@(writeData) begin
+    always@(*) begin
       if(regWrite) regfile[writeReg] = writeData;
 
     end
