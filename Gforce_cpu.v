@@ -3,7 +3,19 @@ This files will contain all components that the CPU has inside of it
 It will also be used to start putting things to gether.
 
 */
+/*
 
+Luis,
+
+The Reset will reset the FSM portion of the control path, the registers in the register file, and the memory locations in the data memory.
+
+When you present a new instruction, you do want to reset the FSM portion of the control path, but NOT the registers in the register file, nor the memory locations in the data memory.
+
+The Clk drives the FSM portion of the control path.
+
+Good luck!
+
+*/
 
 /* ALU Control - by Kevin Valdez
  Takes ALUOp code from control and read function instruction and sets out
@@ -14,17 +26,14 @@ module ALUControl (ALUOp , Function , Output);
   input  wire  [5:0] Function;
   output reg   [3:0] Output;
 
-  always @(ALUOp or Function)
+  always @(ALUOp)
   begin
+    #1;
   	case(ALUOp)
 
   	0: begin
   		 Output = 4'b0010;
   	   end
-  	1: begin
-
-  		 Output = 4'b0110;
-         end
   	2: begin
 
   		 if (Function == 6'b100000)
@@ -90,8 +99,12 @@ module muxMemtoReg (solution, solution2 , memtoReg , outputval3);
   input wire memtoReg;
   output wire [31:0] outputval3;
 
+    reg [31:0] inoutpu;
+  always@(solution or solution2) begin
+     inoutpu = (memtoReg) ? solution2:solution;
+  end
 
-  assign outputval3 = (memtoReg)? solution: solution2;
+  assign outputval3 = inoutpu;
 
   endmodule
 
@@ -105,7 +118,9 @@ module instructmem(
     output wire [15:11] instruct4,
     output wire [15:0]  instruct5,
     output wire [5:0]   instruct6,
-    input wire newinstruction1);
+    input wire newinstruction
+    );
+
     //instruction mememory, takes register input(program instruction)
     //and splits it up 6 parts
 
@@ -118,7 +133,7 @@ module instructmem(
     reg [5:0]  inInstruct6;
     //always sets inputval bits to their internal regs
 
-    always@(posedge newinstruction1)
+    always@(negedge newinstruction)
     begin
     #1
     inInstruct1 = inputVal[31:26];
@@ -155,21 +170,25 @@ module control(
   output reg MemtoWrite,
   output reg ALUSrc,
   output reg RegWrite,
-  input rst);
+  input wire newinstr,
+  input wire rst);
 /*
 *This module sets the control signals for the control Path
 *
 *The Signals are dependant on the opcode given
-
-
 */
-  always@(negedge rst) begin
-  MemtoRead = 0 ;
-  MemtoWrite = 0;
-  RegWrite = 0;
+  always@(posedge rst or posedge newinstr) begin
+  #1MemtoRead = 0;
+  #1MemtoWrite = 0;
+  #1RegWrite = 0;
+  #1RegDst = 0;
+  #1Branch = 0;
+  #1MemtoReg = 0;
+  #1ALUOp = 0;
+  #1ALUSrc = 0;
   end
 
-  always@(negedge clock) begin
+  always@(posedge clock) begin
       case (Opcode)
         0 : begin
         RegDst = 1;
@@ -181,7 +200,7 @@ module control(
       35:begin
             RegDst = 0;
             ALUSrc = 1;
-            MemtoReg = 1;
+            MemtoReg = 0;
             Branch = 0;
             ALUOp = 0;
             end
@@ -189,6 +208,7 @@ module control(
             ALUSrc = 1;
             Branch = 0;
             ALUOp = 0;
+            MemtoReg=0;
            end
 
         endcase
@@ -220,7 +240,7 @@ module control(
       RegWrite <= 1;
       end
     43: begin
-      MemtoWrite <= 1;
+      #8 MemtoWrite <= 1;
       RegWrite <= 0;
         end
     endcase
@@ -246,6 +266,12 @@ module Memory (wrctrl,rdctrl,addr,wrdata,rddata,rst);
         end
   end
 
+  always@(posedge rst) begin
+    for(i=0;i<128;i=i+1)
+      begin
+        mem_file[i] = 32'b0;
+      end
+    end
 
   always @(posedge rdctrl) begin
     rddata = (rdctrl) ? mem_file[addr]:0;
@@ -262,23 +288,19 @@ module alu(
       input wire [31:0] op1,
       input wire [31:0] op2,
       input wire [3:0] ctrl,
-      output reg [31:0] result3,
-      input wire clock
+      output reg [31:0] result3
       );
 
       //Trigger when ctrl changes values
       //Can change the blocking statements to nonblocking statements
       //However changes in the testbench will be required(remove #'s , except for the op1)
 
-      always@(posedge clock) begin #4
+      always@(op1 or op2) begin
         case(ctrl)
           //Instructions as shown in table in pg 259
           0 : result3 = op1 & op2;
           1 : result3 = op1 | op2;
-          2 : begin
-              result3 = op1 + op2;
-              #2;
-              end
+          2 : result3 = op1 + op2;
           6 : result3 = op1 - op2;
           7 : result3 = op1 < op2;
           12: result3 = ~(op1|op2);
@@ -297,14 +319,15 @@ module registerfile(
       input wire regWrite,
       output reg [31:0] readData1,
       output reg [31:0] readData2,
-      input wire rst,
-      input wire clock);
+      input wire rst
+      );
 
     //used to make a array of 32 32-bit registers
     reg [31:0] regfile[31:0];
     integer i;
     //Registerfile will always read registers but will only write to them when
     //regWrite is set.
+
     initial begin
         for(i=0;i<32;i=i+1)
           begin
@@ -312,14 +335,21 @@ module registerfile(
           end
     end
 
+    always@(posedge rst) begin
+      for(i=0;i<32;i=i+1)
+        begin
+          regfile[i] = 32'b0;
+        end
+      end
 
-    always@(posedge clock) begin
-      #1 readData1 = regfile[readReg1];
+      always@(readReg1 or readReg2) begin
+        #8;
+        readData1 = regfile[readReg1];
         readData2 = regfile[readReg2];
-    end
+      end
 
-    always@(negedge regWrite) begin
-      regfile[writeReg] = writeData;
+    always@(writeData) begin
+      if(regWrite) regfile[writeReg] = writeData;
 
     end
 
@@ -370,7 +400,6 @@ module mipscpu(
     wire [31:0] readdata1cpu;
     wire [31:0] signextresultcpu;
     wire [31:0] readdata;
-    wire [31:0] aluresult;
     wire [4:0] towriteregistercpu;
     wire [15:0] signextedcpu;
 
@@ -401,6 +430,7 @@ control controlcpu(
   memwritecpu,
   alusrccpu,
   regwritecpu,
+  newinstr,
   reset);
 
 
@@ -427,7 +457,7 @@ muxALUSrc muxAlusrccpu(
 is either the result from alu, or from memory.*/
 muxMemtoReg muxmemtoregcpu(
   readdata,
-  aluresult,
+  aluresultcpu,
   memtoregcpu,
   outputtoregwrite
   );
@@ -445,8 +475,8 @@ alu alucpu(
   readdata1cpu,
   op2alu,
   aluctrltoalu,
-  aluresultcpu,
-  clk);
+  aluresultcpu
+  );
 
 
 
@@ -458,8 +488,7 @@ registerfile registerfilecpu(
   regwritecpu,
   readdata1cpu,
   readdata2cpu,
-  reset,
-  clk);
+  reset);
 
 
 signextend cpusignextender(
