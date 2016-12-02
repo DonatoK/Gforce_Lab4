@@ -28,7 +28,7 @@ module ALUControl (ALUOp , Function , Output);
 
   always @(ALUOp)
   begin
-    #1;
+    #3;
   	case(ALUOp)
 
   	0: begin
@@ -203,12 +203,12 @@ module control(
             MemtoReg = 0;
             Branch = 0;
             ALUOp = 0;
+
             end
       43:begin
             ALUSrc = 1;
             Branch = 0;
             ALUOp = 0;
-            MemtoReg=0;
            end
 
         endcase
@@ -218,30 +218,33 @@ module control(
         case(Opcode)
           0: begin
               MemtoRead <= 0;
+              RegWrite<=1;
               end
           35: begin
               MemtoRead <= 1;
+              RegWrite <= 1;
               end
           43: begin
               MemtoRead <= 0;
+              RegWrite <= 0;
               end
           endcase
         end
 
 
-  always@(posedge clock) begin
+  always@(negedge clock) begin
     case(Opcode)
     0: begin
       MemtoWrite<=0;
-      RegWrite<=1;
+
       end
     35: begin
       MemtoWrite<=0;
-      RegWrite <= 1;
+
       end
     43: begin
-      #8 MemtoWrite <= 1;
-      RegWrite <= 0;
+      #5;
+      MemtoWrite <= 1;
         end
     endcase
   end
@@ -274,7 +277,7 @@ module Memory (wrctrl,rdctrl,addr,wrdata,rddata,rst);
     end
 
   always @(posedge rdctrl) begin
-    rddata = (rdctrl) ? mem_file[addr]:0;
+    rddata = (rdctrl) ? mem_file[addr][31:0]:0;
 
  end
 
@@ -295,7 +298,7 @@ module alu(
       //Can change the blocking statements to nonblocking statements
       //However changes in the testbench will be required(remove #'s , except for the op1)
 
-      always@(op1 or op2) begin
+      always@(op1 or op2 or ctrl) begin
         case(ctrl)
           //Instructions as shown in table in pg 259
           0 : result3 = op1 & op2;
@@ -343,7 +346,6 @@ module registerfile(
       end
 
       always@(readReg1 or readReg2) begin
-        #8;
         readData1 = regfile[readReg1];
         readData2 = regfile[readReg2];
       end
