@@ -76,13 +76,13 @@ $display("Register 3: %d",mycpu.registerfilecpu.regfile[3]);
   $display("Register 5: %d",mycpu.registerfilecpu.regfile[5]); //
 
 
-  #1Instrword = 32'b10101100000001010000000000000011; //Stores 26 d
+  #1Instrword = 32'b10101100000001010000000000000011; //Stores 26 to d in memort
   Newinstr = 0;
   #1 Newinstr = 1;
   #1 Newinstr = 0;
   #10;
 
-  $display("Memory value d: %d",mycpu.memcpu.mem_file[1]);
+  $display("Memory value d: %d",mycpu.memcpu.mem_file[3]);
 
 
   $finish;
