@@ -1,0 +1,182 @@
+[*]
+[*] GTKWave Analyzer v3.3.71 (w)1999-2016 BSI
+[*] Fri Dec 02 06:56:16 2016
+[*]
+[dumpfile] "C:\Users\trono_000\Desktop\Computer Architecture\santos_lab4\test.vcd"
+[dumpfile_mtime] "Fri Dec 02 06:34:57 2016"
+[dumpfile_size] 7232
+[savefile] "C:\Users\trono_000\Desktop\Computer Architecture\santos_lab4\GforceCPUWaveform.gtkw"
+[timestart] 0
+[size] 1600 837
+[pos] -1 -1
+*-4.180131 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] testybench.
+[treeopen] testybench.mycpu.
+[sst_width] 197
+[signals_width] 415
+[sst_expanded] 1
+[sst_vpaned_height] 236
+@200
+-testbenchInputs
+@28
+testybench.Clock
+testybench.Reset
+testybench.Instrword[31:0]
+testybench.Newinstr
+@200
+-
+-
+-InstructMemory
+@c00028
+[color] 2
+testybench.mycpu.insmemcpu.inputVal[31:0]
+@28
+(0)testybench.mycpu.insmemcpu.inputVal[31:0]
+(1)testybench.mycpu.insmemcpu.inputVal[31:0]
+(2)testybench.mycpu.insmemcpu.inputVal[31:0]
+(3)testybench.mycpu.insmemcpu.inputVal[31:0]
+(4)testybench.mycpu.insmemcpu.inputVal[31:0]
+(5)testybench.mycpu.insmemcpu.inputVal[31:0]
+(6)testybench.mycpu.insmemcpu.inputVal[31:0]
+(7)testybench.mycpu.insmemcpu.inputVal[31:0]
+(8)testybench.mycpu.insmemcpu.inputVal[31:0]
+(9)testybench.mycpu.insmemcpu.inputVal[31:0]
+(10)testybench.mycpu.insmemcpu.inputVal[31:0]
+(11)testybench.mycpu.insmemcpu.inputVal[31:0]
+(12)testybench.mycpu.insmemcpu.inputVal[31:0]
+(13)testybench.mycpu.insmemcpu.inputVal[31:0]
+(14)testybench.mycpu.insmemcpu.inputVal[31:0]
+(15)testybench.mycpu.insmemcpu.inputVal[31:0]
+(16)testybench.mycpu.insmemcpu.inputVal[31:0]
+(17)testybench.mycpu.insmemcpu.inputVal[31:0]
+(18)testybench.mycpu.insmemcpu.inputVal[31:0]
+(19)testybench.mycpu.insmemcpu.inputVal[31:0]
+(20)testybench.mycpu.insmemcpu.inputVal[31:0]
+(21)testybench.mycpu.insmemcpu.inputVal[31:0]
+(22)testybench.mycpu.insmemcpu.inputVal[31:0]
+(23)testybench.mycpu.insmemcpu.inputVal[31:0]
+(24)testybench.mycpu.insmemcpu.inputVal[31:0]
+(25)testybench.mycpu.insmemcpu.inputVal[31:0]
+(26)testybench.mycpu.insmemcpu.inputVal[31:0]
+(27)testybench.mycpu.insmemcpu.inputVal[31:0]
+(28)testybench.mycpu.insmemcpu.inputVal[31:0]
+(29)testybench.mycpu.insmemcpu.inputVal[31:0]
+(30)testybench.mycpu.insmemcpu.inputVal[31:0]
+(31)testybench.mycpu.insmemcpu.inputVal[31:0]
+@1401200
+-group_end
+@28
+testybench.mycpu.insmemcpu.instruct1[31:26]
+testybench.mycpu.insmemcpu.instruct2[25:21]
+testybench.mycpu.insmemcpu.instruct3[20:16]
+testybench.mycpu.insmemcpu.instruct4[15:11]
+testybench.mycpu.insmemcpu.instruct5[15:0]
+testybench.mycpu.insmemcpu.instruct6[5:0]
+testybench.mycpu.insmemcpu.newinstruction1
+@200
+-
+-
+-Control Signals
+@28
+testybench.mycpu.controlcpu.clock
+testybench.mycpu.controlcpu.rst
+testybench.mycpu.controlcpu.ALUOp[1:0]
+testybench.mycpu.controlcpu.ALUSrc
+testybench.mycpu.controlcpu.MemtoRead
+testybench.mycpu.controlcpu.MemtoReg
+testybench.mycpu.controlcpu.MemtoWrite
+@22
+testybench.mycpu.controlcpu.Opcode[5:0]
+@28
+testybench.mycpu.controlcpu.RegDst
+testybench.mycpu.controlcpu.RegWrite
+@200
+-
+-
+-alucontrol
+@28
+testybench.mycpu.alucontrolcpu.ALUOp[1:0]
+@22
+testybench.mycpu.alucontrolcpu.Function[5:0]
+testybench.mycpu.alucontrolcpu.Output[3:0]
+@200
+-
+-
+-alucpu
+@28
+testybench.mycpu.alucpu.clock
+@22
+testybench.mycpu.alucpu.ctrl[3:0]
+testybench.mycpu.alucpu.op1[31:0]
+testybench.mycpu.alucpu.op2[31:0]
+testybench.mycpu.alucpu.result3[31:0]
+@200
+-
+-
+-SignExtend
+@22
+testybench.mycpu.cpusignextender.inputVal[15:0]
+testybench.mycpu.cpusignextender.outputVal[31:0]
+@200
+-
+-
+-DataMemory
+@28
+testybench.mycpu.memcpu.rst
+@22
+testybench.mycpu.memcpu.addr[31:0]
+@28
+testybench.mycpu.memcpu.rdctrl
+@22
+testybench.mycpu.memcpu.rddata[31:0]
+@28
+testybench.mycpu.memcpu.wrctrl
+@22
+testybench.mycpu.memcpu.wrdata[31:0]
+@200
+-
+-
+-MuxAluSrc
+@28
+testybench.mycpu.muxAlusrccpu.ALUSrc
+@22
+testybench.mycpu.muxAlusrccpu.outputval2[31:0]
+testybench.mycpu.muxAlusrccpu.result2[31:0]
+testybench.mycpu.muxAlusrccpu.result[31:0]
+@200
+-
+-muxRegDst
+@28
+testybench.mycpu.muxRegDestcpu.RegDestination
+@22
+testybench.mycpu.muxRegDestcpu.input1[4:0]
+testybench.mycpu.muxRegDestcpu.input2[4:0]
+testybench.mycpu.muxRegDestcpu.outputval[4:0]
+@200
+-
+-
+-muxMemtoReg
+@28
+testybench.mycpu.muxmemtoregcpu.memtoReg
+@22
+testybench.mycpu.muxmemtoregcpu.solution[31:0]
+testybench.mycpu.muxmemtoregcpu.solution2[31:0]
+testybench.mycpu.muxmemtoregcpu.outputval3[31:0]
+@200
+-
+-
+-
+-RegisterFile
+@28
+testybench.mycpu.registerfilecpu.clock
+testybench.mycpu.registerfilecpu.rst
+testybench.mycpu.registerfilecpu.regWrite
+@22
+testybench.mycpu.registerfilecpu.readReg1[4:0]
+testybench.mycpu.registerfilecpu.readReg2[4:0]
+testybench.mycpu.registerfilecpu.readData1[31:0]
+testybench.mycpu.registerfilecpu.readData2[31:0]
+testybench.mycpu.registerfilecpu.writeData[31:0]
+testybench.mycpu.registerfilecpu.writeReg[4:0]
+[pattern_trace] 1
+[pattern_trace] 0
