@@ -76,11 +76,11 @@ module muxRegDestination(input1,input2, RegDestination ,outputval);
 module muxALUSrc (result, result2, ALUSrc , outputval2 );
 
   input wire [31:0] result;
-  input wire [31:0] result2;
+  input wire [31:0] result2; //offset
   output wire[31:0] outputval2;
   input wire ALUSrc;
 
-  assign outputval2 = (ALUSrc)? result: result2;
+  assign outputval2 = (ALUSrc)? result2: result;
 
   endmodule
   /********************************************************************************************************************************************/
@@ -138,7 +138,8 @@ module instructmem(
 
     endmodule
 
-/* Control - by Luis Santos
+/* Control - started by Luis Santos
+    Finished by the whole group
 
    Takes the Opcode sent to it and sends
    output signals dependant for the Opcode.
@@ -162,30 +163,29 @@ module control(
 
 
 */
-  always@(posedge rst) begin
-  MemtoReg = 0;
+  always@(negedge rst) begin
   MemtoRead = 0 ;
   MemtoWrite = 0;
   RegWrite = 0;
   end
 
-  always@(Opcode) begin
+  always@(negedge clock) begin
       case (Opcode)
         0 : begin
         RegDst = 1;
         Branch = 0;
-        MemtoReg = 0;
+        MemtoReg = 1;
         ALUOp = 2;
         ALUSrc = 0;
             end
-        35:begin
+      35:begin
             RegDst = 0;
             ALUSrc = 1;
             MemtoReg = 1;
             Branch = 0;
             ALUOp = 0;
             end
-        43:begin
+      43:begin
             ALUSrc = 1;
             Branch = 0;
             ALUOp = 0;
@@ -209,7 +209,7 @@ module control(
         end
 
 
-  always@(negedge clock) begin
+  always@(posedge clock) begin
     case(Opcode)
     0: begin
       MemtoWrite<=0;
@@ -262,18 +262,23 @@ module alu(
       input wire [31:0] op1,
       input wire [31:0] op2,
       input wire [3:0] ctrl,
-      output reg [31:0] result3
+      output reg [31:0] result3,
+      input wire clock
       );
 
       //Trigger when ctrl changes values
       //Can change the blocking statements to nonblocking statements
       //However changes in the testbench will be required(remove #'s , except for the op1)
-      always@(ctrl) begin
+
+      always@(posedge clock) begin #4
         case(ctrl)
           //Instructions as shown in table in pg 259
           0 : result3 = op1 & op2;
           1 : result3 = op1 | op2;
-          2 : result3 = op1 + op2;
+          2 : begin
+              result3 = op1 + op2;
+              #2;
+              end
           6 : result3 = op1 - op2;
           7 : result3 = op1 < op2;
           12: result3 = ~(op1|op2);
@@ -308,15 +313,20 @@ module registerfile(
     end
 
 
-    always@(*)begin
-      readData1 = regfile[readReg1];
-      readData2 = regfile[readReg2];
+    always@(posedge clock) begin
+      #1 readData1 = regfile[readReg1];
+        readData2 = regfile[readReg2];
     end
 
-    always@(posedge clock) begin
+    always@(negedge regWrite) begin
+      regfile[writeReg] = writeData;
+
+    end
+
+    /*always@(posedge clock) begin
       if(regWrite==1)
         regfile[writeReg] = writeData;
-    end
+    end*/
     endmodule
 
 //Sign extend component
@@ -435,7 +445,8 @@ alu alucpu(
   readdata1cpu,
   op2alu,
   aluctrltoalu,
-  aluresultcpu);
+  aluresultcpu,
+  clk);
 
 
 
