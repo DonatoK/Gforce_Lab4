@@ -1,20 +1,18 @@
 /*
-This files will contain all components that the CPU has inside of it
-It will also be used to start putting things to gether.
+G-Force CPU component files
 
-*/
-/*
 
-Luis,
-
-The Reset will reset the FSM portion of the control path, the registers in the register file, and the memory locations in the data memory.
-
-When you present a new instruction, you do want to reset the FSM portion of the control path, but NOT the registers in the register file, nor the memory locations in the data memory.
-
-The Clk drives the FSM portion of the control path.
-
-Good luck!
-
+Contains:
+    ALU - Does add,sub,or,lw,sw
+    control - control mux signals
+    ALUControl - takes signal from control and function field and output alu op code
+    muxALUSrc - chooses the second operator for the ALU
+    muxMemtoReg - chooses either the output of the memory or alu to send to registerfile for writing
+    muxRegDestination - chooses either rt field or rd field to write in register file
+    memory - contains values of alu result if written into
+    registerfile - contains registers
+    signextend - makes 16 bit input to 32 bit result
+    instructmem - Will split the instructions work to difference sizes
 */
 
 /* ALU Control - by Kevin Valdez
@@ -157,7 +155,7 @@ module instructmem(
     Finished by the whole group
 
    Takes the Opcode sent to it and sends
-   output signals dependant for the Opcode.
+   output signals dependant of the Opcode.
 */
 module control(
   input wire clock,
@@ -172,11 +170,7 @@ module control(
   output reg RegWrite,
   input wire newinstr,
   input wire rst);
-/*
-*This module sets the control signals for the control Path
-*
-*The Signals are dependant on the opcode given
-*/
+
   always@(posedge rst or posedge newinstr) begin
   #1MemtoRead = 0;
   #1MemtoWrite = 0;
@@ -231,7 +225,6 @@ module control(
           endcase
         end
 
-
   always@(negedge clock) begin
     case(Opcode)
     0: begin
@@ -251,7 +244,6 @@ module control(
 endmodule
 
 /* Data Memory - Eberado Sanchez*/
-
 module Memory (wrctrl,rdctrl,addr,wrdata,rddata,rst);
 
     	input wire wrctrl,rdctrl;
@@ -281,12 +273,12 @@ module Memory (wrctrl,rdctrl,addr,wrdata,rddata,rst);
 
  end
 
-always @(posedge wrctrl) begin
-    mem_file[addr] = (wrctrl) ? wrdata:0;
- end
-    endmodule
+  always @(posedge wrctrl) begin
+      mem_file[addr] = (wrctrl) ? wrdata:0;
+   end
+   endmodule
 
-/* ALU component*/
+/* ALU */
 module alu(
       input wire [31:0] op1,
       input wire [31:0] op2,
@@ -313,7 +305,7 @@ module alu(
       end
     endmodule
 
-/*Register file component*/
+/*Register File*/
 module registerfile(
       input wire [4:0] readReg1,
       input wire [4:0] readReg2,
@@ -354,14 +346,11 @@ module registerfile(
       if(regWrite) regfile[writeReg] = writeData;
 
     end
-
-    /*always@(posedge clock) begin
-      if(regWrite==1)
-        regfile[writeReg] = writeData;
-    end*/
     endmodule
 
-//Sign extend component
+
+
+//Sign Extend
 module signextend(inputVal,outputVal);
 
     input [15:0] inputVal;
@@ -378,136 +367,118 @@ module mipscpu(
     input wire [31:0] instrword,
     input wire newinstr);
 
-// Made wires to store the output signals
-    wire [31:26] opcodecpu;
-    wire [25:21] readReg1cpu;
-    wire [20:16] readReg2cpu;
-    wire [15:11] mux1rdcpu;
-    wire [15:0] signExtendercpu;
-    wire [5:0] alufunctioncpu;
-    // Made some output wires for the control signals
-    wire regdstcpu;
-    wire branchcpu;
-    wire memreadcpu;
-    wire memtoregcpu;
-    wire [1:0] aluopcpu;
-    wire memwritecpu;
-    wire alusrccpu;
-    wire regwritecpu;
-    wire [31:0] op2alu;
-    wire [31:0] outputtoregwrite;
-    wire [3:0] aluctrltoalu;
-    wire [31:0] aluresultcpu;
-    wire [31:0] readdata2cpu;
-    wire [31:0] readdata1cpu;
-    wire [31:0] signextresultcpu;
-    wire [31:0] readdata;
-    wire [4:0] towriteregistercpu;
-    wire [15:0] signextedcpu;
+
+    // Instructmem outpus
+    wire [31:26] opcodecpu;  //to control
+    wire [25:21] readReg1cpu; //to register file readReg1
+    wire [20:16] readReg2cpu; //to register file readReg2 and muxRegDestcpu
+    wire [15:11] mux1rdcpu;   //to muxRegDestcpu
+    wire [15:0] signExtendercpu; //to signextend
+    wire [5:0] alufunctioncpu; //to ALUControl
+
+    //Control Signal outputs
+    wire regdstcpu; //to muxRegDestcpu
+    wire branchcpu; //unused signal
+    wire memreadcpu;  // to memory MemtoRead port
+    wire memwritecpu; // to memort MemtoRead port
+    wire memtoregcpu; // to muxMemtoReg
+    wire [1:0] aluopcpu; //to ALUControl
+    wire alusrccpu; //to muxALUSrc
+    wire regwritecpu; //to registerfile
 
 
-//Connecting instruction to instruction memory
-instructmem insmemcpu(
-        instrword,  //From testbench
-        opcodecpu,  //Goes to control
-        readReg1cpu, //Goes to register file
-        readReg2cpu, //Goes to register file and mux
-        mux1rdcpu,   //Rd address to mux
-        signExtendercpu, //
-        alufunctioncpu,
-        newinstr);
+    //List of wires that interconnect to eachother
+
+    wire [31:0] op2alu;         // from muxALUSrc to ALU port 2
+    wire [31:0] outputtoregwrite; //from muxMemtoReg to Registerfile port 4
+    wire [3:0] aluctrltoalu;   // from ALUControl to ALU port 3
+    wire [31:0] aluresultcpu;     //from alu to memory port 3 and muxMemtoReg port 2
+    wire [31:0] readdata1cpu;  //from registerfile to ALU port 1
+    wire [31:0] readdata2cpu;      //from registerfile to muxALUSrc port 1
+    wire [31:0] signextresultcpu;//from signexted to muxALUsrc port 2
+    wire [31:0] readdata;           //from memory to muxMemtoReg port1
+    wire [4:0] towriteregistercpu;     //from muxMemtoReg to registerfile port 3
+    wire [15:0] signextedcpu;     //from Instructmem to signextend
 
 
 
-/*Inputs opcode made by instructmem and assign signals based on opcode
-Signal names can be used on other devices to connect them together*/
-control controlcpu(
-  clk,
-  opcodecpu,
-  regdstcpu,
-  branchcpu,
-  memreadcpu,
-  memtoregcpu,
-  aluopcpu,
-  memwritecpu,
-  alusrccpu,
-  regwritecpu,
-  newinstr,
-  reset);
+  instructmem insmemcpu(
+          instrword,
+          opcodecpu,
+          readReg1cpu,
+          readReg2cpu,
+          mux1rdcpu,
+          signExtendercpu,
+          alufunctioncpu,
+          newinstr);
 
 
-/*Connect RegDest signal from control and the other parts of instruction word to mux
-that later connects to register file*/
-muxRegDestination muxRegDestcpu(
-  readReg2cpu,
-  mux1rdcpu,
-  regdstcpu,
-  towriteregistercpu);
+  control controlcpu(
+    clk,
+    opcodecpu,
+    regdstcpu,
+    branchcpu,
+    memreadcpu,
+    memtoregcpu,
+    aluopcpu,
+    memwritecpu,
+    alusrccpu,
+    regwritecpu,
+    newinstr,
+    reset);
 
+  muxRegDestination muxRegDestcpu(
+    readReg2cpu,
+    mux1rdcpu,
+    regdstcpu,
+    towriteregistercpu);
 
+  muxALUSrc muxAlusrccpu(
+    readdata2cpu,
+    signextresultcpu,
+    alusrccpu,
+    op2alu);
 
+  muxMemtoReg muxmemtoregcpu(
+    readdata,
+    aluresultcpu,
+    memtoregcpu,
+    outputtoregwrite
+    );
 
-//Decides if wether or not alu will use offset .
-muxALUSrc muxAlusrccpu(
-  readdata2cpu,
-  signextresultcpu,
-  alusrccpu,
-  op2alu);
+  ALUControl alucontrolcpu(
+    aluopcpu,
+    alufunctioncpu,
+    aluctrltoalu);
 
+  alu alucpu(
+    readdata1cpu,
+    op2alu,
+    aluctrltoalu,
+    aluresultcpu);
 
-/*This mux will decide if either the value to be written back to register file
-is either the result from alu, or from memory.*/
-muxMemtoReg muxmemtoregcpu(
-  readdata,
-  aluresultcpu,
-  memtoregcpu,
-  outputtoregwrite
-  );
+  registerfile registerfilecpu(
+    readReg1cpu,
+    readReg2cpu,
+    towriteregistercpu,
+    outputtoregwrite,
+    regwritecpu,
+    readdata1cpu,
+    readdata2cpu,
+    reset);
 
+  signextend cpusignextender(
+    signExtendercpu,
+    signextresultcpu
+    );
 
-
-ALUControl alucontrolcpu(
-  aluopcpu,
-  alufunctioncpu,
-  aluctrltoalu);
-
-
-//In here replace readdata1cpu with register file read data 1 output name
-alu alucpu(
-  readdata1cpu,
-  op2alu,
-  aluctrltoalu,
-  aluresultcpu
-  );
-
-
-
-registerfile registerfilecpu(
-  readReg1cpu,
-  readReg2cpu,
-  towriteregistercpu,
-  outputtoregwrite,
-  regwritecpu,
-  readdata1cpu,
-  readdata2cpu,
-  reset);
-
-
-signextend cpusignextender(
-  signExtendercpu,
-  signextresultcpu
-  );
-
-Memory memcpu(
-  memwritecpu,
-  memreadcpu,
-  aluresultcpu,
-  readdata2cpu,
-  readdata,
-  reset
-  );
-
-
-
+  Memory memcpu(
+    memwritecpu,
+    memreadcpu,
+    aluresultcpu,
+    readdata2cpu,
+    readdata,
+    reset
+    );
 
 endmodule

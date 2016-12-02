@@ -1,5 +1,5 @@
 $date
-	Fri Dec 02 13:16:08 2016
+	Fri Dec 02 15:15:34 2016
 $end
 $version
 	Icarus Verilog
@@ -7,7 +7,7 @@ $end
 $timescale
 	1s
 $end
-$scope module testybench $end
+$scope module CPU_tb $end
 $var reg 1 ! Clock $end
 $var reg 32 " Instrword [31:0] $end
 $var reg 1 # Newinstr $end
